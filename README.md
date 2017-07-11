@@ -29,7 +29,7 @@ It's meant to be a simple front end to review a small corpus of personal notes -
   npm test
   ```
 - Start the server
-  ``bash
+  ```bash
   DEBUG=journal:* npm start
   ```
 - Stop the server with ctl-c, etc.
