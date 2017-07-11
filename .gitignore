@@ -1,0 +1,7 @@
+*~
+\#*\#
+*.swp
+.ipynb_checkpoints
+.nyc_output/
+coverage/
+node_modules/
