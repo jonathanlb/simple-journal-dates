@@ -1,5 +1,6 @@
 # simple-journal-dates
 Keep todos, book-lists, and other notes by date.
+![Alt text](screenshots/simple-journal-dates.png?raw=true "Optional Title")
 
 ## Motivation
 simple-journal-dates presents by-date html content, browseable using the date selector.
