@@ -9,8 +9,8 @@ It's meant to be a simple front end to review a small corpus of personal notes -
 - Clone simple-journal-dates and set a link to your dated content:
   ```bash
   git clone https://github.com/jonathanlb/simple-journal-dates.git
-  cd simple-journal-dates
-  ln -s <your-content-directory> public/content
+  cd simple-journal-dates/public
+  ln -s <your-content-directory> content
   ```
 - [Download jquery](https://jquery.com/download/) into public/js/lib/jquery.js
   ```bash
