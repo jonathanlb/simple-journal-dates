@@ -11,8 +11,18 @@ describe('find module', function() {
       to.deep.equal([`${__dirname}/../public/js/lib/jquery.js`]);
   });
 
+  it('can recursively search directories with limit', function() {
+    expect(find.findFiles(`${__dirname}/../public/js`, 'jquery.js$', 1)).
+      to.deep.equal([`${__dirname}/../public/js/lib/jquery.js`]);
+  });
+
   it('returns empty on no match', function() {
     expect(find.findFiles(__dirname, 'not a test')).to.deep.equal([]);
+  });
+
+  it('returns empty on search level exhaustion', function() {
+    expect(find.findFiles(`${__dirname}/../public/js`, 'jquery.js$', 0)).
+      to.deep.equal([]);
   });
     
   it('returns finds this test', function() {

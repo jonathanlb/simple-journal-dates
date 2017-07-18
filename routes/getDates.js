@@ -13,7 +13,7 @@ function exposeFileAsContent(fileName) {
 router.get('/:prefix', function(req, res, next) {
 	const prefix = req.params.prefix;
 	
-	const result = findFiles(root, `/${prefix}-.*\\.html$`).
+	const result = findFiles(root, `/${prefix}-.*\\.html$`, 3).
 	map(exposeFileAsContent);
 	
 	res.send(JSON.stringify(result));
@@ -24,7 +24,7 @@ router.get('/:prefix/:year/', function(req, res, next) {
 	const prefix = req.params.prefix;
 	const year = req.params.year;
 	
-	const result = findFiles(root, `/${year}/.*/${prefix}-.*\\.html$`).
+	const result = findFiles(root, `/${year}/.*/${prefix}-.*\\.html$`, 3).
 	map(exposeFileAsContent);
 	
 	res.send(JSON.stringify(result));
@@ -36,7 +36,7 @@ router.get('/:prefix/:year/:month', function(req, res, next) {
   const year = req.params.year;
   const month = req.params.month;
 	
-  const result = findFiles(root, `/${year}/${month}/${prefix}-.*\\.html$`).
+  const result = findFiles(root, `/${year}/${month}/${prefix}-.*\\.html$`, 3).
 	map(exposeFileAsContent);
 	
 	res.send(JSON.stringify(result));
