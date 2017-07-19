@@ -14,10 +14,8 @@ const find = (function() {
     const dirListing = fs.readdirSync(root);
     var results = [];
     
-console.log('limit', limit);
     for (var i = dirListing.length - 1; i >= 0; i--) {
       var fileName = `${root}/${dirListing[i]}`
-console.log('fileName', fileName);
       if (fs.lstatSync(fileName).isDirectory()) {
         if (limit === undefined) {
           results = results.concat(findFiles(fileName, regEx));
@@ -25,7 +23,6 @@ console.log('fileName', fileName);
           results = results.concat(findFiles(fileName, regEx, limit - 1));
         }
       } else if (fileName.match(regEx)) {
-console.log('found');
         results.push(fileName);
       }
     }
