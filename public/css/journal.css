@@ -1,0 +1,23 @@
+#content {
+  clear: both
+}
+
+#content-select { }
+
+#dated-entry-picker {
+  padding-top: 10px
+}
+
+#text-search {
+  float: left
+}
+
+#topic-date-select {
+  float: left
+}
+
+#topic-select-menu { }
+
+div.journal {
+  padding: 10px
+}

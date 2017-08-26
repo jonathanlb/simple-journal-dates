@@ -1,3 +1,8 @@
+// Copyright (c) 2017 Jonathan Bredin
+// MIT license http://opensource.org/licenses/MIT
+// 
+// Server-side get content by-date functions.
+//
 const express = require('express');
 const findFiles = require('../src/find').findFiles;
 const router = express.Router();

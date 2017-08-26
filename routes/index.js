@@ -1,3 +1,6 @@
+// Copyright (c) 2017 Jonathan Bredin
+// MIT license http://opensource.org/licenses/MIT
+// 
 var express = require('express');
 var router = express.Router();
 

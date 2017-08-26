@@ -28,6 +28,14 @@ It's meant to be a simple front end to review a small corpus of personal notes -
   ```bash
   npm test
   ```
+- For search functionality, run [solr](http://lucene.apache.org/solr/)
+  ```${SOLR_HOME}/bin/solr start -e cloud -noprompt```
+  or hide the text-search div in public/journal.html or public/css/journal.css.
+  
+  Create a collection journal
+  ```curl 'http://localhost:8983/solr/admin/collections?action=CREATE&name=test-collection&numShards=2&replicationFactor=2'```
+  You will need to index periodically the content
+  ```${SOLR_HOME}/bin/post -c journal public/content/*/*/*html```
 - Start the server
   ```bash
   DEBUG=journal:* npm start

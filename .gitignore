@@ -5,3 +5,5 @@
 .nyc_output/
 coverage/
 node_modules/
+public/content
+public/js/lib

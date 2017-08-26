@@ -21,6 +21,13 @@ const contentByDate = (() => {
     return new Date(year, month - 1, day);  
   }
 
+  /** Return the topic name from a content URL for display. */
+  function getTopicName(docUrl) {
+    return (docUrl.match(/\/([a-z_\-]*)-[0-9]{8}\.html$/)[1] || '???').
+      replace(/\s\S/g, txt => ' ' + txt.substr(1).toUpperCase()).
+      replace(/^\S/, txt => txt.toUpperCase());
+  }
+
   /** 
    * Create the year-month key for directory look up. 
    */
@@ -38,6 +45,25 @@ const contentByDate = (() => {
     const parts = yyyymmdd.match(
       /([0-9]{4})[\-/ ]?([0-9]{2})[\-/ ]?([0-9]{2})?/);
     return parts.splice(1,3);
+  }
+
+  function parseYearMonthDateFromUrl(docUrl) {
+    return parseYearMonthDate(docUrl.match(/-([0-9]{8})\.html$/)[1] || '???');
+  }
+
+  /**
+   * Return a promise with the content from url and update the div.
+   */
+  function scheduleSetContent(url, contentDivName) {
+    return fetch(url).
+      then(response => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          console.error(`error getting content from ${url}`, response);
+        }
+      }).then(content => 
+        $(`#${contentDivName}`).html(content));
   }
 
   /** 
@@ -121,15 +147,7 @@ const contentByDate = (() => {
     function scheduleDateSelect(dateStr) {
       const [year, month, day] = parseYearMonthDate(dateStr);
       const url = `content/${year}/${month}/${topic}-${year}${month}${day}.html`; 
-      return fetch(url).
-        then(response => {
-          if (response.ok) {
-            return response.text();
-          } else {
-            console.error(`error getting content from ${url}`, response);
-          }
-        }).then(content => 
-          $(`#${contentDivName}`).html(content));
+      return scheduleSetContent(url, contentDivName);
     }
 
     /** 
@@ -163,6 +181,62 @@ const contentByDate = (() => {
   }
   
   /** 
+   * Create the search panel.
+   */
+  function createSearchOptions(
+    searchTextName,
+    searchResultsDivName,
+    contentDivName,
+    contentPickerOptions)
+  {
+
+    function createResultLink(doc) {
+      const [year, month, day] = parseYearMonthDateFromUrl(doc);
+      const topic = getTopicName(doc);
+      // XXX relies on module name
+      // TODO: set topic and date for content picker.
+      return `<a onclick="contentByDate.scheduleSetContent('content/${doc}','${contentDivName}')">${year}/${month}/${day} ${topic}</a>`;
+    }
+
+    function displaySearchResults(results) {
+      const resultsDiv = $(`#${searchResultsDivName}`);
+      // make html string to render once -- jquery will terminate hanging elts.
+      var html = `<label>Query:</label>
+        <tt> ${results.query} </tt>
+        <ol>`; // XXX TODO: escape query string.
+      results.docs.forEach(doc => {
+        html += `<li>${createResultLink(doc)}</li>`;
+      });
+      html += '</ol>';
+      resultsDiv.html(html);
+    }
+
+    function searchIndex(query) {
+      const url = `solr/${query}`;
+      return fetch(url).
+        then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(`error searching from ${url}`, response);
+          }
+        }).then(displaySearchResults);
+    };
+
+    const searchText = $(`#${searchTextName}`);
+    searchText.on('keyup', e => {
+      if (e.keyCode == 13) {
+        searchIndex(e.currentTarget.value);
+        searchText.val('');
+      }
+    });
+
+    return {
+      searchIndex
+    };
+  }
+
+  /** 
    * Create the topic selector for jquery-ui.
    */
   function createTopicSelectorOptions(setTopic)
@@ -171,11 +245,13 @@ const contentByDate = (() => {
       change: (event, ui) =>
         setTopic(ui.item.label),
     };
-  };
+  }
 
   return {
     createContentPickerOptions: createContentPickerOptions,
     createTopicSelectorOptions: createTopicSelectorOptions,
+    createSearchOptions: createSearchOptions,
+    scheduleSetContent: scheduleSetContent,
     _createDate: createDate,
     _getYYYYMM: getYYYYMM,
     _parseYearMonthDate: parseYearMonthDate
