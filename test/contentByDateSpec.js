@@ -142,28 +142,28 @@ describe('content by date module utilities', () => {
   });
 
   it('can parse dashed date strings', () => {
-    const [year, month, day] = contentByDate._parseYearMonthDate('2017-07-04');
+    const [year, month, day] = contentByDate.parseYearMonthDate('2017-07-04');
     expect(year).to.equal('2017');
     expect(month).to.equal('07');
     expect(day).to.equal('04');
   });
 
   it('can parse date strings', () => {
-    const [year, month, day] = contentByDate._parseYearMonthDate('20170704');
+    const [year, month, day] = contentByDate.parseYearMonthDate('20170704');
     expect(year).to.equal('2017');
     expect(month).to.equal('07');
     expect(day).to.equal('04');
   });
 
   it('can parse slashed date strings', () => {
-    const [year, month, day] = contentByDate._parseYearMonthDate('2017/07/04');
+    const [year, month, day] = contentByDate.parseYearMonthDate('2017/07/04');
     expect(year).to.equal('2017');
     expect(month).to.equal('07');
     expect(day).to.equal('04');
   });
 
   it('can parse yyyymm strings', () => {
-    const [year, month, day] = contentByDate._parseYearMonthDate('201707');
+    const [year, month, day] = contentByDate.parseYearMonthDate('201707');
     expect(year).to.equal('2017');
     expect(month).to.equal('07');
   });

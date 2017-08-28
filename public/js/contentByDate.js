@@ -1,6 +1,6 @@
 // Copyright (c) 2017 Jonathan Bredin
 // MIT license http://opensource.org/licenses/MIT
-//
+
 /** Facilitate access to dated file store.
  * Underlying file storage is structured under
  *   public/content/$yyyy/$mm/$topic-$yyyymmdd.html
@@ -45,10 +45,6 @@ const contentByDate = (() => {
     const parts = yyyymmdd.match(
       /([0-9]{4})[\-/ ]?([0-9]{2})[\-/ ]?([0-9]{2})?/);
     return parts.splice(1,3);
-  }
-
-  function parseYearMonthDateFromUrl(docUrl) {
-    return parseYearMonthDate(docUrl.match(/-([0-9]{8})\.html$/)[1] || '???');
   }
 
   /**
@@ -181,62 +177,6 @@ const contentByDate = (() => {
   }
   
   /** 
-   * Create the search panel.
-   */
-  function createSearchOptions(
-    searchTextName,
-    searchResultsDivName,
-    contentDivName,
-    contentPickerOptions)
-  {
-
-    function createResultLink(doc) {
-      const [year, month, day] = parseYearMonthDateFromUrl(doc);
-      const topic = getTopicName(doc);
-      // XXX relies on module name
-      // TODO: set topic and date for content picker.
-      return `<a onclick="contentByDate.scheduleSetContent('content/${doc}','${contentDivName}')">${year}/${month}/${day} ${topic}</a>`;
-    }
-
-    function displaySearchResults(results) {
-      const resultsDiv = $(`#${searchResultsDivName}`);
-      // make html string to render once -- jquery will terminate hanging elts.
-      var html = `<label>Query:</label>
-        <tt> ${results.query} </tt>
-        <ol>`; // XXX TODO: escape query string.
-      results.docs.forEach(doc => {
-        html += `<li>${createResultLink(doc)}</li>`;
-      });
-      html += '</ol>';
-      resultsDiv.html(html);
-    }
-
-    function searchIndex(query) {
-      const url = `solr/${query}`;
-      return fetch(url).
-        then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            console.error(`error searching from ${url}`, response);
-          }
-        }).then(displaySearchResults);
-    };
-
-    const searchText = $(`#${searchTextName}`);
-    searchText.on('keyup', e => {
-      if (e.keyCode == 13) {
-        searchIndex(e.currentTarget.value);
-        searchText.val('');
-      }
-    });
-
-    return {
-      searchIndex
-    };
-  }
-
-  /** 
    * Create the topic selector for jquery-ui.
    */
   function createTopicSelectorOptions(setTopic)
@@ -250,11 +190,11 @@ const contentByDate = (() => {
   return {
     createContentPickerOptions: createContentPickerOptions,
     createTopicSelectorOptions: createTopicSelectorOptions,
-    createSearchOptions: createSearchOptions,
+    getTopicName: getTopicName,
+    parseYearMonthDate: parseYearMonthDate,
     scheduleSetContent: scheduleSetContent,
     _createDate: createDate,
     _getYYYYMM: getYYYYMM,
-    _parseYearMonthDate: parseYearMonthDate
   };
 
 })();

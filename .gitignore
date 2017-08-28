@@ -6,4 +6,5 @@
 coverage/
 node_modules/
 public/content
+public/css/jquery-*
 public/js/lib

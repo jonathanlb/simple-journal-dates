@@ -34,6 +34,7 @@
 <div id="content" class="journal"></div>
 
 <script src="../js/contentByDate.js"></script>
+<script src="../js/searchIndex.js"></script>
 <script>
 // XXX match topic selection with option above
 const contentPickerOptions = contentByDate.createContentPickerOptions(
@@ -45,7 +46,7 @@ const selectTopicOptions = contentByDate.createTopicSelectorOptions(
 $('#topic-select-menu').selectmenu(selectTopicOptions);
 $('#dated-entry-picker').datepicker(contentPickerOptions);
 
-const contentSearch = contentByDate.createSearchOptions(
+const contentSearch = searchIndex.createSearchOptions(
   'search-text', 'search-results', 'content', contentPickerOptions);
 </script>
 
