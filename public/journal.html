@@ -41,13 +41,15 @@ const contentPickerOptions = contentByDate.createContentPickerOptions(
     'dated-entry-picker', 'content', 'todo');
 
 const selectTopicOptions = contentByDate.createTopicSelectorOptions(
-    contentPickerOptions.setTopic);
+    contentPickerOptions.setTopic,
+    'topic-select-menu');
 
 $('#topic-select-menu').selectmenu(selectTopicOptions);
 $('#dated-entry-picker').datepicker(contentPickerOptions);
 
 const contentSearch = searchIndex.createSearchOptions(
-  'search-text', 'search-results', 'content', contentPickerOptions);
+  'search-text', 'search-results', 'content',
+  contentPickerOptions, selectTopicOptions);
 </script>
 
 </body>

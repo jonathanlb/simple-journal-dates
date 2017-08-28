@@ -30,6 +30,7 @@ describe('search index module', () => {
   
   it('can instantiate a search widget', () => {    
     const contentPickerOptions = {};
+    const selectTopicOptions = {};
     const searchWidget = searchIndex.createSearchOptions(
       'search-text', 'search-results', 'content', contentPickerOptions);
     return expect(searchWidget.searchIndex('nothing')).not.to.be.null;
@@ -37,16 +38,31 @@ describe('search index module', () => {
 
   it('can parse search results', () => {    
     $(document.documentElement).html(
-      '<div id="search-results">previous content</div>');
+      `<select id="topic-select-menu">
+        <option>Testing</option>
+        <option selected="selected">Todo</option>
+      </select>
+      <div id="search-results">previous content</div>`);
 
-    const contentPickerOptions = {};
+    var contentTopic = '';
+    const contentPickerOptions = {
+      setTopic: (topic) => {
+        contentTopic = topic;
+      }
+    };
+
+    const selectTopicOptions = contentByDate.createTopicSelectorOptions(
+      contentPickerOptions.setTopic,
+      'topic-select-menu');
+
     const searchWidget = searchIndex.createSearchOptions(
-      'search-text', 'search-results', 'content', contentPickerOptions);
+      'search-text', 'search-results', 'content',
+      contentPickerOptions, selectTopicOptions);
     const promise = searchWidget.searchIndex('testing').
       then(() => {
         const results = $('#search-results').html();
-        return results.match('testing-stuff-20170827.html') &&
-          results.match('testing-stuff-20170828.html') &&
+        return results.match('id="result-2017-08-27-Testing-stuff"') &&
+          results.match('id="result-2017-08-28-Testing-stuff"') &&
           true;
       });
 

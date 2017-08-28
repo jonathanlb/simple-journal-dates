@@ -19,10 +19,12 @@ describe('content by date module', () => {
     global.jQuery = $;
     const jqueryui = require('../public/js/lib/jquery-ui');
 
+    fetchMock.get('getDates/todo/2017/06', []);
     fetchMock.get(
       'getDates/todo/2017/07',
       ['public/content/2017/07/todo-20170704.html', 
         'public/content/2017/07/todo-20170708.html']);
+    fetchMock.get('getDates/todo/2017/08', []);
 
     fetchMock.get(
       'content/2017/07/todo-20170708.html',
@@ -79,6 +81,32 @@ describe('content by date module', () => {
     expect(initResponse).to.deep.equal([false]);
   });
 
+  it('update content externally', () => {
+    $(document.documentElement).html(
+      `<select id="topic-select-menu">
+        <option>Notes</option>
+        <option selected="selected">Todo</option>
+      </select>
+      <div id=datepicker></div>
+      <div id="content"></div>`);
+
+    const dpArgs = contentByDate.createContentPickerOptions(
+      'datepicker', 'content', 'todo');
+    dpArgs.defaultDate = new Date(2017, 06, 04);
+    const selectTopicOptions = contentByDate.createTopicSelectorOptions(
+      dpArgs.setTopic, 'topic-select-menu');
+
+    $('#topic-select-menu').selectmenu(selectTopicOptions);
+    $('#datepicker').datepicker(dpArgs);
+
+    dpArgs.updateContent({
+      doc: '2017/07/todo-20170708.html',
+      month: 07,
+      topic: 'Todo',
+      year: 2017
+    });
+  });
+
   it('updates dates', () => {
     const yyyymmdd = '20170702';
     const date = contentByDate._createDate(yyyymmdd);
@@ -86,7 +114,7 @@ describe('content by date module', () => {
       'datepicker', 'content', 'todo');
 
     expect(dpArgs._isDateJournaled('todo', date)).to.equal(false);
-    dpArgs._setDates('todo', ['blah/blah/2017/07/todo-20170702.html']);
+    dpArgs.setDates('todo', ['blah/blah/2017/07/todo-20170702.html']);
     expect(dpArgs._isDateJournaled('todo', date)).to.equal(true);
   });
 
@@ -98,7 +126,7 @@ describe('content by date module', () => {
       'datepicker', 'content', 'todo');
 
     expect(dpArgs._isDateJournaled('todo', date)).to.equal(false);
-    const fetchResponse = dpArgs._fetchDates('todo', yyyymm).
+    const fetchResponse = dpArgs.fetchDates('todo', yyyymm).
       then(() => 
         dpArgs._isDateJournaled('todo', date));
     return expect(fetchResponse).to.eventually.equal(true);

@@ -119,7 +119,17 @@ const contentByDate = (() => {
         return false;
       }
     }
-    
+
+    /**
+     * Update the widgets for date change.
+     * Known weakness -- year and month must be ints.
+     */
+    function onChangeMonthYear(year, month, inst) {
+      datepicker('setDate', `${year}-${month}-01`);
+      const yyyymm = year + ((month < 10) ? '0' : '') + month;
+      return fetchDates(topic, yyyymm);
+    }
+
     /** 
      * Record dates with topic content.
      */
@@ -146,6 +156,10 @@ const contentByDate = (() => {
       return scheduleSetContent(url, contentDivName);
     }
 
+    function topicToFileName(topic) {
+      return topic.toLowerCase().replace('/ /g', '-');
+    };
+
     /** 
      * Set the topic to used to populate the datepicker.
      * Topics will be converted to lowercase and spaces replaced with dashes,
@@ -153,37 +167,54 @@ const contentByDate = (() => {
      */
     function setTopic(newTopic) {
       const oldTopic = topic;
-      topic = newTopic.toLowerCase().replace('/ /g', '-');
+      topic = topicToFileName(newTopic);
       const date = datepicker('getDate');
       fetchDates(topic, getYYYYMM(date));
       return oldTopic;
     }
     
+    /**
+     * @param {Object} contentOptions -
+     *   doc -- the document name in URL
+     *   month
+     *   topic -- the full topic name with spaces for display
+     *   year
+     */
+    function updateContent(content) {
+      datepicker('setDate', `${content.year}-${content.month}-01`);
+      setTopic(content.topic);
+      onChangeMonthYear(content.year, content.month);
+      scheduleSetContent(`content/${content.doc}`, contentDivName);
+    }
+
     return {
       beforeShowDay: (date) => [isDateJournaled(topic, date)],
       dateFormat: 'yy-mm-dd',
+      fetchDates: fetchDates,
       inline: true,
-      onChangeMonthYear: (year, month, inst) => {
-        datepicker('setDate', `${year}-${month}-01`);
-        const yyyymm = year + ((month < 10) ? '0' : '') + month;
-        return fetchDates(topic, yyyymm);
-      },
+      onChangeMonthYear: onChangeMonthYear,
       onSelect: scheduleDateSelect,
+      setDates: setDates,
       setTopic: setTopic,
-      _fetchDates: fetchDates,
-      _isDateJournaled: isDateJournaled,
-      _setDates: setDates
+      topicToFileName: topicToFileName,
+      updateContent: updateContent,
+      _isDateJournaled: isDateJournaled
     };
   }
   
   /** 
    * Create the topic selector for jquery-ui.
    */
-  function createTopicSelectorOptions(setTopic)
+  function createTopicSelectorOptions(onSetTopic, topicSelectMenuId)
   {
     return {
       change: (event, ui) =>
-        setTopic(ui.item.label),
+        onSetTopic(ui.item.label),
+      setTopic: (displayTopic) => {
+        const widget = $(`#${topicSelectMenuId}`);
+        widget.val(displayTopic);
+        widget.selectmenu('refresh');
+      }
     };
   }
 
